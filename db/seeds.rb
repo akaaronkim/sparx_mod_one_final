@@ -20,3 +20,8 @@ restaurant8 = Restaurant.create(name: "Halal Guys", zipcode: "94102", url: "http
 restaurant9 = Restaurant.create(name: "Golden Boy Pizza", zipcode: "94133", url: "https://goldenboypizza.com")
 restaurant10 = Restaurant.create(name: "IHOP", zipcode: "94133", url: "https://ihop.com")
 
+review1 = Review.create(user: user1, restaurant: restaurant10, rating: 5)
+review2 = Review.create(user: user10, restaurant: restaurant1, rating: 3)
+review3 = Review.create(user: user3, restaurant: restaurant5, rating: 1)
+review4 = Review.create(user: user5, restaurant: restaurant1, rating: 4)
+review5 = Review.create(user: user1, restaurant: restaurant8, rating: 2)
