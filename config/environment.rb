@@ -7,6 +7,8 @@ require_all 'app/models'
 require "json"
 require "pry"
 require "rest-client"
+require "optparse"
+require "http"
 
 
 ENV["SINATRA_ENV"] ||= 'development'

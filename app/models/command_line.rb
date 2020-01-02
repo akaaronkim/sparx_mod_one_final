@@ -8,46 +8,47 @@ class CLI
         welcome
     end
 
-    def welcome
-        puts "Hello!"
-    end
-    
-    # response = RestClient.get("https://developers.zomato.com/api/v2.1/search?", {"user-key" => "2b9423ad30cd3b08e5762a65bc190392"})
-    # parsed_response = JSON.parse(response)
+end
 
-    # binding.pry
+API_KEY = "V8luDogdQ0cBLfJHPmm_sE1GEWqh1Zt4VJwBPzY_8oQKYByfmoJnjEemi0uC1x_4ZysZYHj9qMfceed5Avt5-QnIq3h7CE1N1ThEIG4EhKskNhNZj1d9mhxTRXULXnYx"
+# Constants, do not change these
+    API_HOST = "https://api.yelp.com"
+    SEARCH_PATH = "/v3/businesses/search"
+    BUSINESS_PATH = "/v3/businesses/"  # trailing / because we append the business id to the path
+    DEFAULT_BUSINESS_ID = "yelp-san-francisco"
+    DEFAULT_TERM = "restaurant"
+    DEFAULT_LOCATION = "San Francisco, CA"
+    SEARCH_LIMIT = 20
+
+def search(term, location)
+  url = "#{API_HOST}#{SEARCH_PATH}"
+  params = {
+    term: term,
+    location: location,
+    limit: SEARCH_LIMIT
+  }
+  response = HTTP.auth("Bearer #{API_KEY}").get(url, params: params)
+  response.parse
 end
 
 def search_restaurants
-    response = RestClient.get("https://developers.zomato.com/api/v2.1/search?q=san+francisco", {"user-key" => "9ea9e2da9ab249f74af457520ac97290"})
-    parsed_response = JSON.parse(response)
+    all_restaurants = search(DEFAULT_TERM, DEFAULT_LOCATION)
 end
    
-
-    def find_by_zipcode(zipcode)
-        
-        @restaurants_by_zip = []
-        search_restaurants["restaurants"].select do |api_hash|
-            restaurant = api_hash["restaurant"]
-            restaurant_zipcode = api_hash["restaurant"]["location"]["zipcode"]
-                if restaurant_zipcode == zipcode
-                    a_restaurant = {
-                        name: restaurant["name"],
-                        cuisine: restaurant["cuisines"],
-                        location: restaurant["location"]
-                    }
-                    
-                    
-                    
-                    @restaurants_by_zip << a_restaurant
-                end
+def restaurant_names
+    @all_restaurants =[]
+    search_restaurants["businesses"].select do |element|
+        element.each do |k,v|
+            if k == "name"
                 
-                     
-    
+                @all_restaurants << v
+
+            end
         end
-        @restaurants_by_zip
-        binding.pry
     end
+    @all_restaurants
+end
+
 
 #displays welcome message
 #menu page for user
