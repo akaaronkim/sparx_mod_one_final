@@ -1,11 +1,17 @@
-require 'rest-client'
-require 'json'
-require 'pry'
 
 class CLI 
     #displays welcome message
-    def initialize
-        welcome
+    def welcome
+        puts Rainbow("
+                ,-\"-. 
+              _r-----i \"        _
+              \\      |-.      ,***. 
+               |     | |    ,-------. 
+               |     | |   c|       |                       ,--. 
+               |     |'     |       |      _______________ C|  | 
+               (=====)      =========      \\_____________/  `=='   dla 
+             (HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH) 
+        ").magenta
     end
 
 end
@@ -55,8 +61,6 @@ end
 #obtains user input from menu page
 #exits the app
 #reroutes user back to menu
-#loads the parsed_response <-- searching through the API
-#creates an array of all restaurants
 #def method that searches for restaurants in a given zipcode 
 #search for highest rated restaurants
 #random restaurant suggestion in given zipcode 

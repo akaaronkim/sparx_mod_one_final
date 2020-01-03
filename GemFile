@@ -10,3 +10,4 @@ gem "pry"
 gem "require_all"
 gem "rest-client"
 gem "http"
+gem 'rainbow'

@@ -9,6 +9,7 @@ require "pry"
 require "rest-client"
 require "optparse"
 require "http"
+require "rainbow"
 
 
 ENV["SINATRA_ENV"] ||= 'development'
