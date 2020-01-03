@@ -63,7 +63,7 @@ API_KEY = "V8luDogdQ0cBLfJHPmm_sE1GEWqh1Zt4VJwBPzY_8oQKYByfmoJnjEemi0uC1x_4ZysZY
     DEFAULT_BUSINESS_ID = "yelp-san-francisco"
     DEFAULT_TERM = "restaurant"
     DEFAULT_LOCATION = "San Francisco, CA"
-    SEARCH_LIMIT = 10
+    SEARCH_LIMIT = 50
 
 def search(term, location)
   url = "#{API_HOST}#{SEARCH_PATH}"
@@ -98,6 +98,10 @@ end
 
 def add_restaurants_to_db(restaurants = [])
     all_restaurants = search_restaurants
+    if all_restaurants == nil
+        return nil
+    end
+
     all_restaurants.each do |current_restaurant|
         add_restaurant_to_db(current_restaurant)
     end
@@ -108,24 +112,15 @@ def restaurants_by_highest_rating
     Restaurant.order(rating: :desc).last(10)
 end
 
-# def order_by_price(price)
-#     if price == "$"
-#         return 1
-#     elsif price == "$$"
-#         return 2
-#     elsif price == "$$$"
-#         return 3
-#     else 
-#         return 4
-#     end
-# end
-
 def restaurants_by_price
     add_restaurants_to_db(search_restaurants)
-    result = Restaurant.all.sort_by {|r| r.price}.reverse.first(10)
-    binding.pry
+    Restaurant.all.sort_by {|r| r.price}.reverse.first(10)
 end
 
+def restaurants_by_cuisine(cuisine)
+    add_restaurants_to_db(search_restaurants)
+    result = Restaurant.where(category: cuisine)
+end
 # def restaurants_in_my_area
 #     # call the api and grab all the restaurants
 #     all_restaurants = search_restaurants
