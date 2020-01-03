@@ -14,8 +14,11 @@ ActiveRecord::Schema.define(version: 2019_12_31_220017) do
 
   create_table "restaurants", force: :cascade do |t|
     t.string "name"
-    t.string "zipcode"
-    t.string "url"
+    t.string "category"
+    t.string "price"
+    t.float "rating"
+    t.string "phone"
+    t.string "address"
   end
 
   create_table "reviews", force: :cascade do |t|
