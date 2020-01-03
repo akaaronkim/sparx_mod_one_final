@@ -12,7 +12,7 @@ class User < ActiveRecord::Base
     # display "my favorites" based on ratings >=4
     def my_favorites
         self.reviews.map do |review|
-             if review.rating >= 4
+             if review.rating >= 4.0
                 review.restaurant
              end
         end.uniq 
