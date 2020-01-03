@@ -46,15 +46,37 @@ def restaurant_names
     search_restaurants["businesses"].select do |element|
         element.each do |k,v|
             if k == "name"
-                
                 @all_restaurants << v
-
             end
         end
     end
     @all_restaurants
 end
 
+    #create reviews 
+    def new_review(restaurant_id, rating)
+        Review.new(self, restaurant_id, rating)
+    end
+
+    #display "my favorites" based on ratings >=4
+    def my_favorites
+        @favorites =[]
+        @ratings = []
+        search_restaurants["businesses"].select do |element|
+            element.each do |k,v|
+                if k == "rating"
+                    @ratings << v
+                end
+            end
+            @ratings 
+        end
+        @ratings.map do |rating|
+            if rating >= 4
+                @favorites << rating 
+            end
+        end
+        @favorites
+    end
 
 #displays welcome message
 #menu page for user
