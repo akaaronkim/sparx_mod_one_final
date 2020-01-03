@@ -1,11 +1,13 @@
 
 class CLI 
-    #displays welcome message
+    #implements code in run method extracted from run.rb
     def run 
         welcome
-        menu_select
+        main_display_menu
+        # menu_select
     end
-
+    
+    #displays welcome message
     def welcome
         puts Rainbow("
                 ,-\"-. 
@@ -16,82 +18,42 @@ class CLI
                |     |'     |       |      _______________ C|  | 
                (=====)      =========      \\_____________/  `=='   dla 
              (HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH) 
-        ").magenta
-        display_menu
+        ").blue
     end
-    
-    def display_menu
+
+    def main_display_menu
         puts "\n
         Please select from the following options - using numbers (1-4) as your input:\n
         - 1 - List of Restaurants 
         - 2 - Search restaurants by rating
         - 3 - Search restaurants by price
-        - 4 - blah blah blah
-      
+        - 4 - Search restaurants by cuisine
+        -------------------------------------------------------------------------------
         "
-        end
-
-        #gets user input from the menu page
-        def menu_select
-            user_input = gets.chomp
-            case user_input
-            when "1" 
-             restaurant_info = restaurant_names
-             #display choices for user 
-             restaurant_names.each_with_index do |restaurant, i|
-                puts "#{i + 1}: #{restaurant}"
-                
-             end
-            
-            when "2"
-             popular_restaurants = restaurants_by_rating(search_restaurants["businesses"])
-
-             # iterate through all the restaurants
-              popular_restaurants.each do |restaurant|
-                if !Restaurant.find_by(name: restaurant["name"])#if its in the db
-                    Restaurant.create(
-                    name: restaurant["name"], 
-                    category: restaurant["categories"][0]["title"], 
-                    price: restaurant["price"], 
-                    rating: restaurant["rating"], 
-                    phone: restaurant["phone"], 
-                    address: restaurant["location"]["display_address"].join(' '))
-                end
-                    Restaurant.all
-                #retrieve data from db
-              end  
-       
-               # check to see if the current fucking restaurant is in the db
-               # if the current fucking restaurant is not in the db
-               # add that restaurant to the db
-               # else, retrieve the information about that fucking restaurant from the db
-             
-
-            
-             restaurant_choice = gets.chomp
-             case restaurant_choice
-             when "1"
-                # check if restaurant is already in db
-                is_in_db_already = Restaurant.find_by(name: restaurant_info[0])
-                if is_in_db_already
-                    puts is_in_db_already
-                    # retrive it from db
-                else
-                # else call the api to retrieve it.
-                restaurant = search_restaurant_info(restaurant_info[0])
-                add_restaurant_to_db
-                # puts restaurant
-
-                # grab all of the restaurants by rating from yelp
-                # if any of these restaurants are not in the databse, add them to the database
-                # display the relevant information to the use
-                end
-            end
-        end
     end
-end
 
-
+    # def menu_select
+    #     user_input = gets.chomp
+    #     case user_input
+    #     when "1" 
+    #         #define method below
+    #         #create restaurants_in_my_area menu_select
+    #         restaurants_in_my_area
+    #     when "2"
+    #         #define method below
+    #         #create restaurants_by_rating menu_select
+    #         restaurants_by_highest_rating
+    #     when "3"
+    #         #define method below
+    #         #create restaurants_by_price menu_select
+    #         restaurants_by_price
+    #     when "4"
+    #         #define method below
+    #         #create restaurants_by_cuisine menu_select
+    #         restaurants_by_cuisine
+    #     else 
+    #         main_display_menu
+    # end
 
 API_KEY = "V8luDogdQ0cBLfJHPmm_sE1GEWqh1Zt4VJwBPzY_8oQKYByfmoJnjEemi0uC1x_4ZysZYHj9qMfceed5Avt5-QnIq3h7CE1N1ThEIG4EhKskNhNZj1d9mhxTRXULXnYx"
 # Constants, do not change these
@@ -115,57 +77,63 @@ def search(term, location)
 end
 
 def search_restaurants
-    all_restaurants = search(DEFAULT_TERM, DEFAULT_LOCATION)
+    all_restaurants = search(DEFAULT_TERM, DEFAULT_LOCATION)["businesses"]
 end
 
-def search_restaurant_info(name)
-    search_restaurants["businesses"].find do |restaurant|
-        restaurant["name"] == name
-    end  
-end
-
-def restaurant_names
-    @all_restaurants =[]
-    search_restaurants["businesses"].select do |element|
-        element.each do |k,v|
-            if k == "name"
-                @all_restaurants << v
-            end
-        end
+def add_restaurant_to_db(restaurant = nil)
+    if !restaurant
+        return nil
     end
-    @all_restaurants
+    
+    if !Restaurant.find_by(name: restaurant["name"])
+        Restaurant.create(
+            name: restaurant["name"], 
+            category: restaurant["categories"][0]["title"], 
+            price: restaurant["price"], 
+            rating: restaurant["rating"], 
+            phone: restaurant["phone"], 
+            address: restaurant["location"]["display_address"].join(' '))
+    end
 end
 
-def restaurants_by_rating(restaurants)
-    restaurants.sort_by {|restaurant| -restaurant["rating"]}
+def add_restaurants_to_db(restaurants = [])
+    all_restaurants = search_restaurants
+    all_restaurants.each do |current_restaurant|
+        add_restaurant_to_db(current_restaurant)
+    end
 end
 
-def add_restaurant_to_db(restaurant)
-    Restaurant.create(
-        name: restaurant["name"], 
-        category: restaurant["categories"][0]["title"], 
-        price: restaurant["price"], 
-        rating: restaurant["rating"], 
-        phone: restaurant["phone"], 
-        address: restaurant["location"]["display_address"].join(' '))
+def restaurants_by_highest_rating 
+    add_restaurants_to_db(search_restaurants)
+    Restaurant.order(rating: :desc).last(10)
 end
 
-def display_restaurant(restaurant)
-    puts "Name: #{Restaurant.name}"
-    puts "Category: #{Restaurant.category}"
-    puts "Price: #{Restaurant.price}"
-    puts "Rating: #{Restaurant.rating}"
-    puts "Phone: #{Restaurant.phone}"
-    puts "Address: #{Restaurant.address}"
+# def order_by_price(price)
+#     if price == "$"
+#         return 1
+#     elsif price == "$$"
+#         return 2
+#     elsif price == "$$$"
+#         return 3
+#     else 
+#         return 4
+#     end
+# end
+
+def restaurants_by_price
+    add_restaurants_to_db(search_restaurants)
+    result = Restaurant.all.sort_by {|r| r.price}.reverse.first(10)
+    binding.pry
 end
 
-
-
-#displays welcome message
-#menu page for user
-#obtains user input from menu page
-#exits the app
-#reroutes user back to menu
-#def method that searches for restaurants in a given zipcode 
-#search for highest rated restaurants
-#random restaurant suggestion in given zipcode 
+# def restaurants_in_my_area
+#     # call the api and grab all the restaurants
+#     all_restaurants = search_restaurants
+#     # iterate over the restaurants, adding all the ones that arent in the db to the db
+#     all_restaurants.each do |current_restaurant|
+#         add_restaurant_to_db(current_restaurant)
+#     end
+#     Restaurant.find_by()
+#     # retrieve the restaurants from db that are in area
+# end
+end
