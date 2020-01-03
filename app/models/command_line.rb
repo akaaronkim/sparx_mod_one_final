@@ -61,6 +61,10 @@ class CLI
             #define method below
             #create restaurants_in_my_area menu_select
             # restaurants_in_my_area
+            Restaurant.all.each do |r|
+                puts print_restaurant(r)
+            end
+            return_back_to_menu
         when "2"
             #create restaurants_by_rating menu_select
             # restaurants = restaurants_by_highest_rating
@@ -78,7 +82,7 @@ class CLI
             price_display_menu
             
             # more_restaurants = user_price_input
-            user_price_input(restaurants, 5)
+            user_price_input
             return_back_to_menu
         when "4"
             # let the user enter a cuisine
@@ -209,7 +213,7 @@ class CLI
     end
 
 
-    def user_price_input(restaurant, limit)
+    def user_price_input
         #print restaurants that have a specific price range
         user_input = gets.chomp
         case user_input
@@ -303,7 +307,7 @@ class CLI
             user_input == gets.chomp
             if user_input == "y"
                 puts "
-                
+
                 Too bad. You're returning back to the main menu
                 
                 _________________________________________________
